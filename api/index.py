@@ -4,9 +4,9 @@ app = FastAPI()
 
 # Data contoh (Simulasi Database)
 data_psikotes = [
-    {"id": 1, "nama": "Tes IQ", "kategori": "Kognitif", "harga": 150000},
-    {"id": 2, "nama": "Tes Kepribadian", "kategori": "Kepribadian", "harga": 100000},
-    {"id": 3, "nama": "Tes Minat Bakat", "kategori": "Karier", "harga": 200000},
+    {"id": 1, "nama": "Bila", "kategori": "Kognitif", "harga": 150000},
+    {"id": 2, "nama": "Billy", "kategori": "Kepribadian", "harga": 100000},
+    {"id": 3, "nama": "Zahirah", "kategori": "Karier", "harga": 200000},
 ]
 
 @app.get("/")
