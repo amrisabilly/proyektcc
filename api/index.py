@@ -1,36 +1,74 @@
 from fastapi import FastAPI
+from typing import Optional
 
 app = FastAPI()
 
-# Data contoh (Simulasi Database)
-data_psikotes = [
-    {"id": 1, "nama": "Bila", "kategori": "Kognitif", "harga": 150000},
-    {"id": 2, "nama": "Billy", "kategori": "Kepribadian", "harga": 100000},
-    {"id": 3, "nama": "Zahirah", "kategori": "Karier", "harga": 200000},
+# Data Produk Coffee Shop kamu
+products = [
+    {
+        "category_id": 1,
+        "name": "Espresso",
+        "description": "Kopi hitam pekat dengan rasa yang kuat.",
+        "price": 18000
+    },
+    {
+        "category_id": 2,
+        "name": "Cappuccino",
+        "description": "Perpaduan espresso, susu panas, dan busa susu.",
+        "price": 24000
+    },
+    {
+        "category_id": 1,
+        "name": "Caffè Latte",
+        "description": "Espresso dengan susu yang lembut (steamed milk).",
+        "price": 26000
+    },
+    {
+        "category_id": 2,
+        "name": "Americano",
+        "description": "Espresso yang ditambahkan air panas.",
+        "price": 20000
+    },
+    {
+        "category_id": 1,
+        "name": "Mocha",
+        "description": "Kopi dengan campuran coklat dan susu.",
+        "price": 25000
+    }
+    # ... tambahkan data lainnya sesuai keinginanmu ...
 ]
 
-@app.get("/")
-def read_root():
-    return {"message": "API Berhasil di Hosting!"}
-
-
-# Endpoint 1: Data Retrieval (Mengambil semua jenis tes)
-@app.get("/tes")
-def get_semua_tes():
-    return {"status": "success", "data": data_psikotes}
-
-# Endpoint 2: Searching (Mencari tes berdasarkan kategori)
-@app.get("/tes/cari")
-def cari_tes(kategori: str):
-    hasil = [t for t in data_psikotes if kategori.lower() in t["kategori"].lower()]
-    return {"keyword": kategori, "hasil": hasil}
-
-# Endpoint 3: Komputasi (Menghitung total harga jika mengambil semua tes)
-@app.get("/tes/total-biaya")
-def hitung_biaya():
-    total = sum(t["harga"] for t in data_psikotes)
-    # Komputasi sederhana: menjumlahkan harga dari list
+# 1. LAYANAN: DATA RETRIEVAL
+# Mengambil seluruh daftar menu kopi
+@app.get("/menu")
+def get_all_menu():
     return {
-        "pesan": "Total biaya paket lengkap tes psikologi",
-        "total_harga": f"Rp {total}"
+        "status": "success",
+        "total_items": len(products),
+        "data": products
+    }
+
+# 2. LAYANAN: SEARCHING
+# Mencari menu berdasarkan nama (Contoh: /menu/search?name=Latte)
+@app.get("/menu/search")
+def search_coffee(name: Optional[str] = None):
+    if name:
+        hasil_cari = [p for p in products if name.lower() in p["name"].lower()]
+        return {"keyword": name, "found": len(hasil_cari), "results": hasil_cari}
+    return {"message": "Silakan masukkan parameter nama untuk mencari."}
+
+# 3. LAYANAN: KOMPUTASI SEDERHANA
+# Menghitung statistik harga (Total, Rata-rata, dan Produk Termahal)
+@app.get("/menu/stats")
+def get_coffee_stats():
+    prices = [p["price"] for p in products]
+    total_harga = sum(prices)
+    rata_rata = total_harga / len(prices) if prices else 0
+    termahal = max(prices) if prices else 0
+    
+    return {
+        "summary": "Statistik Menu Kopi",
+        "total_harga_semua_menu": f"Rp {total_harga:,}",
+        "rata_rata_harga": f"Rp {rata_rata:,.2f}",
+        "harga_termahal": f"Rp {termahal:,}"
     }
